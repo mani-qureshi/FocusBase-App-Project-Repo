@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const taskRoutes = require('./routes/taskRoutes');
+const errorHandler = require('./middleware/errorMiddleware');
 require("dotenv").config();
 
 
@@ -15,6 +16,9 @@ app.use('/api/tasks', taskRoutes);
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// Global Error Handler must be at the bottom
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3000;
 
