@@ -2,14 +2,32 @@
 const Task = require('../models/Task');
 
 // CREATE - POST /api/tasks
-exports.createTask = async (req, res) => {
+exports.createTask = async (req, res, next) => {
     try {
-        const newTask = await Task.create(req.body);
-        res.status(201).json(newTask);
+        const { title } = req.body;
+
+        // Manual Validation
+        if (!title || title.trim() === "") {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide a task title"
+            });
+        }
+
+        const newTask = await Task.create({ title });
+
+        // Consistent Success Structure
+        res.status(201).json({
+            success: true,
+            data: newTask
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        next(error); // Sending to Middleware
     }
 };
+
+
+
 
 // READ - GET /api/tasks
 exports.getTasks = async (req, res) => {
