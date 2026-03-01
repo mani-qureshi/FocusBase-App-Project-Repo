@@ -4,20 +4,27 @@ const connectDB = require('./config/db');
 const cors = require("cors");
 const taskRoutes = require('./routes/taskRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
+const dotenv = require('dotenv');
 
 require("dotenv").config();
 
+// Load environment variables
+dotenv.config();
+
+// Connect to Database
+connectDB();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+
+app.use('/api/tasks', taskRoutes);
+
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
-
-app.use('/api/tasks', taskRoutes);
 
 // Production Awareness
 if (process.env.NODE_ENV === 'production') {
@@ -31,8 +38,12 @@ if (process.env.NODE_ENV === 'production') {
 app.use(errorHandler);
 
 
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-    console.log(`📡 Server running on port ${PORT}`);
+    console.log(`📡 Server is actually listening on port ${PORT}`);
 });
+
+
 
