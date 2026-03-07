@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const connectDB = require('./config/db');
 const cors = require("cors");
 const taskRoutes = require('./routes/taskRoutes');
+const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 const dotenv = require('dotenv');
 
@@ -20,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/auth', authRoutes);
 
 app.use('/api/tasks', taskRoutes);
 
