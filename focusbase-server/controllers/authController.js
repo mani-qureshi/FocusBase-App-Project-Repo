@@ -42,7 +42,7 @@ exports.loginUser = asyncHandler(async (req, res) => {
     if (user && (await bcrypt.compare(password, user.password))) {
         // Generate JWT
         const token = jwt.sign(
-            { id: user._id }, 
+            { id: user._id, role: user.role }, // Add role here!
             process.env.JWT_SECRET, 
             { expiresIn: '1d' }
         );
