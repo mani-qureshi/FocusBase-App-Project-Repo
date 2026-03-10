@@ -1,7 +1,10 @@
+
 const express = require("express");
 const router = express.Router();
 const { createTask, getTasks, updateTask, deleteTask, } = require("../controllers/taskController");
 const { protect } = require("../middleware/authMiddleware");
+const { authorize } = require('../middleware/roleMiddleware');
+
 
 // Wrap the routes you want to protect
 router.route("/")
@@ -10,7 +13,10 @@ router.route("/")
 
 router.route("/:_id")
   .put(protect, updateTask)
-  .delete(protect, deleteTask);
+  // Only Admins can delete
+  .delete(protect, authorize('admin'), deleteTask);
+
+
 
 // // Root routes
 // router.post('/', createTask);
