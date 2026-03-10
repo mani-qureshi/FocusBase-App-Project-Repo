@@ -1,35 +1,35 @@
-
-const Task = require('../models/Task');
+const Task = require("../models/Task");
 // const asyncHandler = require('../middleware/asyncHandler');
-
 
 // CREATE - POST /api/tasks
 exports.createTask = async (req, res, next) => {
     try {
-        const { title } = req.body;
+        const { title, description, isCompleted } = req.body;
 
         // Manual Validation
         if (!title || title.trim() === "") {
             return res.status(400).json({
                 success: false,
-                message: "Please provide a task title"
+                message: "Please provide a task title",
             });
         }
 
-        const newTask = await Task.create({ title });
+        const newTask = await Task.create({
+            user: req.user.id, // This comes from the decoded JWT!
+            title,
+            description,
+            isCompleted,
+        });
 
         // Consistent Success Structure
         res.status(201).json({
             success: true,
-            data: newTask
+            data: newTask,
         });
     } catch (error) {
         next(error); // Sending to Middleware
     }
 };
-
-
-
 
 // READ - GET /api/tasks
 exports.getTasks = async (req, res) => {
@@ -41,16 +41,15 @@ exports.getTasks = async (req, res) => {
     }
 };
 
-
 // UPDATE - PUT /api/tasks/:_id
 exports.updateTask = async (req, res) => {
     try {
         // { new: true } returns the document AFTER the update
         // { runValidators: true } ensures the new data follows the Schema rules
         const updatedTask = await Task.findByIdAndUpdate(
-            req.params._id, 
-            req.body, 
-            { new: true, runValidators: true }
+            req.params._id,
+            req.body,
+            { new: true, runValidators: true },
         );
 
         if (!updatedTask) {
@@ -60,7 +59,7 @@ exports.updateTask = async (req, res) => {
         res.status(200).json(updatedTask);
     } catch (error) {
         // Step 4: Catching invalid ID formats (CastError)
-        if (error.name === 'CastError') {
+        if (error.name === "CastError") {
             return res.status(400).json({ message: "Invalid ID format" });
         }
         res.status(500).json({ message: "Server Error" });
@@ -78,13 +77,9 @@ exports.deleteTask = async (req, res) => {
 
         res.status(200).json({ message: "Task deleted successfully" });
     } catch (error) {
-        if (error.name === 'CastError') {
+        if (error.name === "CastError") {
             return res.status(400).json({ message: "Invalid ID format" });
         }
         res.status(500).json({ message: "Server Error" });
     }
 };
-
-
-
-
