@@ -19,13 +19,17 @@ exports.registerUser = asyncHandler(async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Before creating the user, check the count
+    const isFirstAccount = (await User.countDocuments({})) === 0;
+
     // Create user
     const user = await User.create({
         name,
         email,
-        password: hashedPassword
+        password: hashedPassword,
+        role: isFirstAccount ? 'admin' : 'user' // First person is Admin, rest are Users
     });
-
+    
     res.status(201).json({
         success: true,
         message: "User registered successfully"
