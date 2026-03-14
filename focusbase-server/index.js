@@ -6,6 +6,10 @@ const taskRoutes = require('./routes/taskRoutes');
 const authRoutes = require('./routes/authRoutes');
 const errorHandler = require('./middleware/errorMiddleware');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const globalLimiter = require('./middleware/ratelimiterMiddleware');
+
 
 require("dotenv").config();
 
@@ -16,6 +20,12 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Use Helmet early in the middleware stack
+app.use(helmet());
+
+// Apply to all routes
+app.use(globalLimiter);
 
 app.use(cors());
 app.use(express.json());
